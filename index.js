@@ -2,34 +2,38 @@
 import fs from "fs/promises";
 import { writeFile } from "fs";
 
-//Gracias Dante por la inspiracion
 //esquema basico, faltan datos
-
-const DataNombres = [
+const DataNombresFemeninos = [
   "Sofía",
-  "Mateo",
   "Valentina",
-  "Agustín",
   "Martina",
-  "Santiago",
   "Camila",
-  "Nicolás",
   "Victoria",
-  "Joaquín",
   "Lucía",
-  "Facundo",
   "Florencia",
-  "Matías",
   "Milagros",
-  "Leonardo",
   "Rocío",
-  "Tomás",
   "Sol",
+  "Emilia",
+  "Silvana",
+  "Malena",
+  "Aymará",
+];
+
+const DataNombresMasculinos = [
+  "Mateo",
+  "Agustín",
+  "Santiago",
+  "Nicolás",
+  "Joaquín",
+  "Facundo",
+  "Matías",
+  "Leonardo",
+  "Tomás",
   "Emiliano",
   "Fausto",
   "Mauricio",
   "Ruperto",
-  "Emilia",
 ];
 
 const DataApellidos = [
@@ -65,7 +69,20 @@ const DataApellidos = [
   "Wanwewi",
 ];
 
-const DataBarrios = [
+const DataLocalidades = [
+  { name: "Formosa Capital" },
+  { name: "El Colorado" },
+  { name: "Clorinda" },
+  { name: "Laguna Blanca" },
+  { name: "General Belgrano" },
+];
+
+const DataBarriosColorado = [];
+const DataBarriosBelgrano = [];
+const DataBarriosLagBlanca = [];
+const DataBarriosClorinda = [];
+
+const DataBarriosFsa = [
   { name: "12 DE OCTUBRE", houses: 526 },
   { name: "2 DE ABRIL", houses: 1022 },
   { name: "BARRIO MILITAR", houses: 119 },
@@ -144,65 +161,95 @@ const DataBarrios = [
   { name: "ARTURO ILLIA II", houses: 670 },
 ];
 
+//asd
+const DataModalidadesSecundaria = [
+  "Cs. Sociales",
+  "Cs. Naturales",
+  "Produccion de Bienes y Servicios",
+];
 function obtenerElementoAleatorio(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Función para generar un DNI aleatorio
 function generarDNIaleatorio() {
   return Math.floor(100000000 + Math.random() * 900000000);
 }
 
-// Función para generar una edad aleatoria entre 18 y 100 años
 function generarEdadAleatoria() {
   const edadMinima = 18;
   const edadMaxima = 100;
   return Math.floor(edadMinima + Math.random() * (edadMaxima - edadMinima + 1));
 }
 
-function generarDocumentosUnicos() {
-  const documentos = new Set();
+function generarAlumnos() {
+  const alumnos = [];
 
-  while (documentos.size < 10000) {
-    const nombre = obtenerElementoAleatorio(DataNombres);
+  for (let i = 0; i < 10000; i++) {
+    const nombre = obtenerElementoAleatorio(
+      i % 2 === 0 ? DataNombresFemeninos : DataNombresMasculinos
+    );
     const apellido = obtenerElementoAleatorio(DataApellidos);
-    const barrio = obtenerElementoAleatorio(DataBarrios);
+    const localidad = obtenerElementoAleatorio(DataLocalidades);
     const dni = generarDNIaleatorio();
     const edad = generarEdadAleatoria();
 
-    const documento = {
+    const nivel =
+      i % 3 === 0 ? "Terciario" : i % 2 === 0 ? "Primaria" : "Secundaria";
+    const gradoAño = nivel === "Primaria" ? "Grado" : "Año";
+    const modalidad =
+      nivel === "Secundaria" && i % 4 === 0
+        ? obtenerElementoAleatorio(DataModalidadesSecundaria)
+        : null;
+    const cantidadMaterias =
+      nivel === "Primaria" ? 8 : nivel === "Secundaria" ? 12 : 8;
+
+    const notas = {};
+    for (let j = 1; j <= cantidadMaterias; j++) {
+      notas[`Materia${j}`] = Math.floor(Math.random() * 10) + 1;
+    }
+
+    const establecimiento = {
+      codigo: nivel === "Primaria" ? 102 : nivel === "Secundaria" ? 103 : 115,
+      nombre: `Escuela ${i + 1}`,
+    };
+
+    const alumno = {
       _id: dni,
       nombres: nombre,
       apellidos: apellido,
+      genero: i % 2 === 0 ? "Femenino" : "Masculino",
+      localidad: localidad,
       domicilio: {
-        barrio: barrio.name,
-        casa: Math.floor(Math.random() * barrio.houses),
+        barrio: localidad,
+        calle: `Calle ${i + 1}`,
+        casa: i + 1,
       },
       edad: edad,
+      nivel: nivel,
+      [gradoAño]: (i % (nivel === "Primaria" ? 6 : 7)) + 1,
+      modalidad: modalidad,
+      notas: notas,
+      establecimiento: establecimiento,
     };
 
-    documentos.add(JSON.stringify(documento));
+    alumnos.push(alumno);
   }
 
-  return Array.from(documentos).map((documento) => JSON.parse(documento));
+  return alumnos;
 }
 
-async function guardarDocumentos() {
+async function guardarAlumnos() {
   try {
-    const documentos = generarDocumentosUnicos();
-    const documentosJSON = JSON.stringify(documentos);
+    const alumnos = generarAlumnos();
+    const alumnosJSON = JSON.stringify(alumnos, null, 2);
 
-    await fs.writeFile("documentos.json", documentosJSON);
+    await fs.writeFile("alumnos.json", alumnosJSON);
     console.log(
-      "Los documentos JSON se han generado y guardado exitosamente en el archivo 'documentos.json'."
+      "Los documentos JSON de los alumnos se han generado y guardado exitosamente en el archivo 'alumnos.json'."
     );
   } catch (error) {
-    console.error("Ocurrió un error al guardar los documentos:", error);
+    console.error("Ocurrió un error al guardar los alumnos:", error);
   }
 }
 
-guardarDocumentos();
-
-
-//el registro que devuelve se ve algo como esto:
-//{"_id":124307767,"nombres":"Fausto","apellidos":"Majda","domicilio":{"barrio":"1° DE MAYO","casa":114},"edad":57},
+guardarAlumnos();
