@@ -77,10 +77,18 @@ const DataLocalidades = [
   { name: "General Belgrano" },
 ];
 
-const DataBarriosColorado = [];
-const DataBarriosBelgrano = [];
-const DataBarriosLagBlanca = [];
-const DataBarriosClorinda = [];
+const DataBarriosColorado = [
+  { name: "Obrero" },
+  { name: "San Miguel" },
+  { name: "San Francisco" },
+];
+const DataBarriosBelgrano = [
+  { name: "Centro" },
+  { name: "40 Viv" },
+  { name: "12 de octubre" },
+];
+const DataBarriosLagBlanca = [{ name: "Centro" }];
+const DataBarriosClorinda = [{ name: "Centro" }];
 
 const DataBarriosFsa = [
   { name: "12 DE OCTUBRE", houses: 526 },
