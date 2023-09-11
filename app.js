@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import { writeFile } from "fs/promises";
 
 //esquema basico, faltan datos
-const DataNombresFemeninos = [
+const nombresFemeninosOriginales = [
   "Sofía",
   "Valentina",
   "Martina",
@@ -20,7 +20,13 @@ const DataNombresFemeninos = [
   "Aymará",
 ];
 
-const DataNombresMasculinos = [
+const DataNombresFemeninos = nombresFemeninosOriginales.map((nombre) => ({
+  name: nombre,
+  gender: "Masculino",
+}));;
+
+
+const nombresMasculinosOriginales  = [
   "Lucas",
   "Daniel",
   "Sergio",
@@ -47,6 +53,13 @@ const DataNombresMasculinos = [
   "Mauricio",
   "Ruperto",
 ];
+
+
+const DataNombresMasculinos = nombresMasculinosOriginales.map((nombre) => ({
+  name: nombre,
+  gender: "Masculino",
+}));;
+
 
 const DataApellidos = [
   "Mernes",
@@ -183,9 +196,9 @@ const DataBarrios = {
 };
 
 const DataModalidadesSecundaria = [
-  "Cs. Sociales",
-  "Cs. Naturales",
-  "Producción de Bienes y Servicios",
+  {name: "Cs. Sociales"},
+  {name:"Cs. Naturales"},
+  {name:"Producción de Bienes y Servicios"},
 ];
 
 function obtenerElementoAleatorio(arr) {
@@ -250,10 +263,21 @@ function generarDomicilio(localidadName) {
   return domicilio;
 }
 
-function generarAlumno(usedDNIs) {
-  const nombre = obtenerElementoAleatorio(
-    Math.random() < 0.5 ? DataNombresFemeninos : DataNombresMasculinos
-  );
+
+function generarAlumno(usedDNIs) {              
+  const nombreMasculino = obtenerElementoAleatorio(DataNombresMasculinos);
+  const nombreFemenino = obtenerElementoAleatorio(DataNombresFemeninos);
+  
+  const nombre =
+    Math.random() < 0.5
+      ? nombreMasculino.name
+      : nombreFemenino.name;
+  
+  const genero =
+    nombre === nombreMasculino.name
+      ? "Masculino"
+      : "Femenino";
+
   const apellido = obtenerElementoAleatorio(DataApellidos);
   const localidad = obtenerElementoAleatorio(DataLocalidades);
   const dni = generarDNIaleatorio(usedDNIs);
@@ -265,11 +289,12 @@ function generarAlumno(usedDNIs) {
       : Math.random() < 0.5
       ? "Primaria"
       : "Secundaria";
+  
+  const grado =  Math.floor(Math.random() * (nivel === "Primaria" ? 6 : 7)) + 1;
   const gradoAño = nivel === "Primaria" ? "Grado" : "Año";
   const modalidad =
-    nivel === "Secundaria" && Math.random() < 0.25
-      ? obtenerElementoAleatorio(DataModalidadesSecundaria)
-      : null;
+    nivel === "Secundaria"  && grado > 3 && 
+      obtenerElementoAleatorio(DataModalidadesSecundaria);
 
   const cantidadMaterias =
     nivel === "Primaria" ? 8 : nivel === "Secundaria" ? 12 : 8;
@@ -290,17 +315,18 @@ function generarAlumno(usedDNIs) {
     _id: dni,
     nombres: nombre,
     apellidos: apellido,
-    genero: Math.random() < 0.5 ? "Femenino" : "Masculino",
+    genero: genero,
     localidad: localidad,
     domicilio: domicilio,
     edad: edad,
     nivel: nivel,
-    [gradoAño]: Math.floor(Math.random() * (nivel === "Primaria" ? 6 : 7)) + 1,
+    [gradoAño]: grado,
     modalidad: modalidad,
     notas: notas,
     establecimiento: establecimiento,
   };
 }
+
 
 async function guardarAlumnos() {
   const usedDNIs = new Set();
