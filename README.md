@@ -4,7 +4,7 @@
 
 Ejemplo del registro que devuelve este script
 
-´´´
+```bash
 {
 "\_id": 123456789, // DNI aleatorio
 "nombres": "Sofía", // Nombre aleatorio de la lista de nombres femeninos/masculinos
@@ -31,6 +31,6 @@ Ejemplo del registro que devuelve este script
 "nombre": "Escuela 1" // Nombre aleatorio para el establecimiento
 }
 }
-´´´
+```
 
 varrios clori 25 de Mayo, 1ro de Mayo, Porteño norte, porteño sur, 240 viviendas, Nazareno, 500 viviendas, Libertad, 140 viviendas
