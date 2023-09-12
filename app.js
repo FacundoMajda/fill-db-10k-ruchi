@@ -131,7 +131,16 @@ const DataMaterias = {
     { name: "ETICA Y CIUDADANIA" },
   ],
   Terciario: [
-    //ME CANSÉ
+    { name: "BASE DE DATOS" },
+    { name: "ALGORITMOS" },
+    { name: "TALLER DE LENGUAJE DE PROGRAMACION" },
+    { name: "PROYECTO INTEGRADOR" },
+    { name: "MATEMATICA APLICADA" },
+    { name: "VALORES CIUDADANOS" },
+    { name: "INGLES" },
+    { name: "MINERIA DE DATOS" },
+    { name: "ARQUITECTURA Y SO" },
+    { name: "TECNOLOGIA Y SOCIEDAD" },
   ],
 };
 
