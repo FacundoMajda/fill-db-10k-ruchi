@@ -105,6 +105,7 @@ const DataEstablecimientos = [
   //Agregar logica para asociar edades, alumnos y tipos segun el establecimiento.
 ];
 
+//Array de materias, primaria, secundaria y terciario respectivamente
 const DataMaterias = {
   Primario: [
     { name: "MATEMÁTICAS" },
@@ -144,6 +145,7 @@ const DataMaterias = {
   ],
 };
 
+//Array de localidades, Formosa Argentina
 const DataLocalidades = [
   { name: "Formosa Capital" },
   { name: "El Colorado" },
@@ -152,6 +154,7 @@ const DataLocalidades = [
   { name: "General Belgrano" },
 ];
 
+//Array de barrios, respectivos para c/ localidad
 const DataBarrios = {
   "Formosa Capital": [
     { name: "12 DE OCTUBRE", houses: 526 },
@@ -289,6 +292,7 @@ const DataBarrios = {
   ],
 };
 
+//Array modalidades asignadas a partir del 4to año de secundaria
 const DataModalidadesSecundaria = [
   { name: "Cs. Sociales" },
   { name: "Cs. Naturales" },
@@ -296,10 +300,12 @@ const DataModalidadesSecundaria = [
   { name: "Producción de Bienes y Servicios" },
 ];
 
+//Funcion obtener elemento aleatorio
 function obtenerElementoAleatorio(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+//Generar DNI como id.
 function generarDNIaleatorio(usedDNIs) {
   let dni;
   do {
@@ -309,6 +315,7 @@ function generarDNIaleatorio(usedDNIs) {
   return dni;
 }
 
+//Generador de edad y franjas etarias
 function generarEdadAleatoria(nivel) {
   let edadMinima, edadMaxima;
   if (nivel === "Primaria") {
@@ -324,6 +331,7 @@ function generarEdadAleatoria(nivel) {
   return Math.floor(edadMinima + Math.random() * (edadMaxima - edadMinima + 1));
 }
 
+//Obtener barrio de los array de arriba, segun localidad
 function obtenerBarrioAleatorio(localidadName) {
   const barrios = DataBarrios[localidadName] || [];
   return barrios.length > 0
@@ -331,6 +339,7 @@ function obtenerBarrioAleatorio(localidadName) {
     : localidadName;
 }
 
+//Generador de domicilio, la estructura del objeto "domicilio", difiere segun el tipo; "Edificio", "Vivienda", "Casa", respectivamente
 function generarDomicilio(localidadName) {
   const domicilio = { calle: `Calle ${Math.floor(Math.random() * 100) + 1}` };
   if (localidadName === "Formosa Capital") {
@@ -358,6 +367,7 @@ function generarDomicilio(localidadName) {
   return domicilio;
 }
 
+//funcion principal, generacion de registro, union de todas las otras funciones
 function generarAlumno(usedDNIs) {
   const nombreMasculino = obtenerElementoAleatorio(DataNombresMasculinos);
   const nombreFemenino = obtenerElementoAleatorio(DataNombresFemeninos);
@@ -417,6 +427,7 @@ function generarAlumno(usedDNIs) {
   };
 }
 
+//Funcion de guardado con FS
 async function guardarAlumnos() {
   const usedDNIs = new Set();
   const alumnos = [];
@@ -435,4 +446,5 @@ async function guardarAlumnos() {
   }
 }
 
+//Starter
 guardarAlumnos();
