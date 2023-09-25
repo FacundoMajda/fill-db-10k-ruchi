@@ -1,34 +1,61 @@
-# fill-db-10k-ruchi
+# Fill Database 10k documents
+
+# Trabajo Integrador Base de Datos II / NoSql
+
+Este proyecto tiene como objetivo generar 10,000 documentos de alumnos utilizando JavaScript. Los documentos de los alumnos se almacenan en formato JSON y representan información sobre estudiantes en la provincia de Formosa. Este proyecto está diseñado para la materia "Base de Datos" bajo la supervisión de los Profesores Victor Hugo Ruchinsky y Ramón Díaz.
+
+Hecho en colaboración entre los alumnos del primer año TSDSM - IPF
 
 ## Modelo de datos
 
-Ejemplo del registro que devuelve este script
+## Interface de Alumno
 
 ```bash
-{
-"\_id": 123456789, // DNI aleatorio
-"nombres": "Sofía", // Nombre aleatorio de la lista de nombres femeninos/masculinos
-"apellidos": "García", // Apellido aleatorio de la lista de apellidos
-"genero": "Femenino", // Género (en este caso, femenino)
-"localidad": { "name": "Formosa Capital" }, // Localidad aleatoria de la lista de localidades
-"domicilio": {
-"tipo:" "casa" //difiere la propiedad del objeto domicilio segun el tipo de residencia
-"barrio": "Guadalupe", // Barrio aleatorio de Fsa Capital
-"calle": "Calle 1", // Calle aleatoria
-"casa": 1 // Número de casa
-},
-"edad": 9, // Edad dentro del rango adecuado (en este caso, primaria)
-"nivel": "Primaria", // Nivel escolar (Primaria, Secundaria o Terciario)
-"Grado": 1, // Grado escolar (1 al 6 para primaria)
-"modalidad": null, // Modalidad (null para primaria)
-"notas": {
-"Materia1": 7, // Notas aleatorias para las materias (1 al 10)
-"Materia2": 6,
-// ... (8 materias en total para primaria)
-},
-"establecimiento": {
-"codigo": 102, // Código de establecimiento según el nivel
-"nombre": "Escuela 1" // Nombre aleatorio para el establecimiento
-}
+ Alumno {
+  _id: number;
+  nombres: string;
+  apellidos: string;
+  genero: string;
+  contacto: {
+    email: string;
+    telefono: string;
+  },
+
+  localidad: DataLocalidades;
+  domicilio: Object;
+  fechaNacimiento: string;
+  año: string;
+  notas: Object;
+  establecimiento: DataEstablecimientosEducativos;
 }
 ```
+
+## Modo de Ejecución
+
+Para ejecutar este proyecto, sigue estos pasos:
+
+1. Clona el repositorio a tu máquina local utilizando el siguiente comando:
+
+```bash
+git clone https://github.com/FacundoMajda/fill-db-10k-ruchi.git
+```
+
+2. Cambia al directorio del proyecto:
+
+```bash
+cd fill-db-10k-ruchi
+```
+
+3. Instala las dependencias del proyecto utilizando npm:
+
+```bash
+npm install
+```
+
+4. Ejecuta el siguiente comando para generar los 10,000 documentos de alumnos:
+
+```bash
+node app.js
+```
+
+Este comando ejecutará el script `app.js`, que generará los documentos de alumnos y los almacenará en formato JSON.

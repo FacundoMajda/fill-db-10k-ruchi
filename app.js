@@ -1,93 +1,120 @@
 //@ts-check
+import faker from "faker";
 
 import fs from "fs/promises";
 import { writeFile } from "fs/promises";
 import {
-  nombresFemeninosOriginales,
-  nombresMasculinosOriginales,
+  DataNombresFemeninos,
+  DataNombresMasculinos,
   DataApellidos,
   DataMaterias,
   DataBarrios,
   DataLocalidades,
   DataModalidadesSecundaria,
-  DataEstablecimientosEducativos,
 } from "./data.js";
+import { DataEstablecimientosEducativos } from "./establecimientos_educativos.js";
 
-//Cantidad y probabilidad
+// Cantidad de alumnos a generar
 const NUM_ALUMNOS = 10000;
-const PROBABILIDAD_GENERO_MASCULINO = 0.5;
-//MinMaxPrimaria
-const EDAD_MINIMA_PRIMARIA = 6;
-const EDAD_MAXIMA_PRIMARIA = 12;
-//MinMaxSecundaria
-const EDAD_MINIMA_SECUNDARIA = 12;
-const EDAD_MAXIMA_SECUNDARIA = 18;
-//MinMaxTerciario
-const EDAD_MINIMA_TERCIARIO = 18;
-const EDAD_MAXIMA_TERCIARIO = 45;
-// //NumMaterias
-// const NUM_MATERIAS_PRIMARIA = 8;
-// const NUM_MATERIAS_SECUNDARIA = 12;
-// const NUM_MATERIAS_TERCIARIO = 10;
+
+// Rangos de edades para cada nivel
+const EDAD_RANGOS = {
+  Inicial: { min: 4, max: 6 },
+  Primario: { min: 6, max: 12 },
+  Secundario: { min: 12, max: 18 },
+  Terciario: { min: 18, max: 45 },
+};
+
+// Niveles educativos y sus códigos
+const NIVELES_EDUCATIVOS = [
+  { codigo: 101, nombre: "Inicial" },
+  { codigo: 102, nombre: "Primaria" },
+  { codigo: 110, nombre: "Secundaria" },
+  { codigo: 115, nombre: "Superior" },
+];
 
 // Gracias Dante por la inspiración
 // Esquema basico, faltan datos
 // Creo que funciona medianamente bien, hacer fork cualquier cosa, se aceptan suggestions
-
-// Relaciones nombre genero
-const DataNombresFemeninos = nombresFemeninosOriginales.map((nombre) => ({
-  name: nombre,
-  gender: "Femenino",
-}));
-const DataNombresMasculinos = nombresMasculinosOriginales.map((nombre) => ({
-  name: nombre,
-  gender: "Masculino",
-}));
 
 //Funcion obtener elemento aleatorio
 function obtenerElementoAleatorio(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+//Genera un numero Aleatorio, como dice su nombre, no?
+function generarNumeroAleatorio(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+}
+
+//-----------------//
 //Generar DNI como id.
-function generarDNIaleatorio(usedDNIs) {
-  let dni;
-  do {
-    dni = Math.floor(100000000 + Math.random() * 900000000);
-  } while (usedDNIs.has(dni));
-  usedDNIs.add(dni);
+// function generarDNIaleatorio(usedDNIs) {
+//   let dni;
+//   do {
+//     dni = Math.floor(100000000 + Math.random() * 900000000);
+//   } while (usedDNIs.has(dni));
+//   usedDNIs.add(dni);
+//   return dni;
+// }
+//---------------------------------//
+const generarFechaNacimiento = () => {
+  return faker.date.between("1900-01-01", "2015-12-31");
+};
+
+function calcularDNI(fechaNacimiento) {
+  if (!fechaNacimiento) {
+    throw new Error("Fecha de nacimiento no definida");
+  }
+
+  // Definir rangos de DNI según el nivel educativo
+  const dniRanges = {
+    Primaria: { min: 50000000, max: 55999999 },
+    Secundaria: { min: 45000000, max: 49999999 },
+    Terciario: { min: 10000000, max: 44999999 },
+  };
+
+  // Extraer el año de nacimiento
+  const yearOfBirth = parseInt(fechaNacimiento.split("-")[0]);
+
+  // Obtener el nivel educativo basado en el año de nacimiento
+  const nivel = obtenerNivelEducativo(yearOfBirth);
+
+  // Obtener el rango de DNI según el nivel educativo
+  const dniRange = dniRanges[nivel];
+
+  // Calcular el DNI en función del año de nacimiento
+  const dni = dniRange.min + (yearOfBirth - new Date().getFullYear());
+
   return dni;
 }
 
-//Generador de edad y franjas etarias
-function generarEdadAleatoria(nivel) {
-  let edadMinima, edadMaxima;
+//---------------------------------//
 
-  if (nivel === "Primario") {
-    edadMinima = EDAD_MINIMA_PRIMARIA;
-    edadMaxima = EDAD_MAXIMA_PRIMARIA;
-  } else if (nivel === "Secundario") {
-    edadMinima = EDAD_MINIMA_SECUNDARIA;
-    edadMaxima = EDAD_MAXIMA_SECUNDARIA;
-  } else {
-    edadMinima = EDAD_MINIMA_TERCIARIO;
-    edadMaxima = EDAD_MAXIMA_TERCIARIO;
+function obtenerNivelEducativo(yearOfBirth) {
+  const edad = new Date().getFullYear() - yearOfBirth;
+
+  if (edad >= 4 && edad <= 6) {
+    return "Inicial";
+  } else if (edad >= 6 && edad <= 12) {
+    return "Primaria";
+  } else if (edad >= 12 && edad <= 18) {
+    return "Secundaria";
+  } else if (edad >= 18 && edad <= 45) {
+    return "Terciario";
+    // } else {
+    //   throw new Error("Edad fuera de rango educativo");
   }
-
-  return Math.floor(edadMinima + Math.random() * (edadMaxima - edadMinima + 1));
 }
 
 //Obtener barrio de los array de arriba, segun localidad
 function obtenerBarrioAleatorio(localidadName) {
-  const barrios = DataBarrios[localidadName] || [];
-  return barrios.length > 0
-    ? obtenerElementoAleatorio(barrios).name
-    : localidadName;
+  return obtenerElementoAleatorio(DataBarrios[localidadName] || []);
 }
 
 //Generador de domicilio, la estructura del objeto "domicilio", difiere segun el tipo; "Edificio", "Vivienda", "Casa", respectivamente
 function generarDomicilio(localidadName) {
-  const domicilio = { calle: `Calle ${Math.floor(Math.random() * 100) + 1}` };
+  const domicilio = { calle: `Calle ${generarNumeroAleatorio() * 1000 + 1}` };
   if (localidadName === "Formosa Capital") {
     const tiposDomicilio = ["Edificio", "Vivienda", "Casa"];
     const tipo = obtenerElementoAleatorio(tiposDomicilio);
@@ -113,8 +140,19 @@ function generarDomicilio(localidadName) {
   return domicilio;
 }
 
-//funcion principal, generacion de registro, union de todas las otras funciones
-function generarAlumno(usedDNIs) {
+// Función principal, generación de registro, unión de todas las otras funciones
+async function generarAlumno() {
+  //-------------------//
+
+  // Definir rangos de DNI según el nivel educativo
+  const dniRanges = {
+    Primaria: { min: 50000000, max: 55999999 },
+    Secundaria: { min: 45000000, max: 49999999 },
+    Terciario: { min: 10000000, max: 44999999 },
+  };
+
+  //-----------------//
+
   const nombreMasculino = obtenerElementoAleatorio(DataNombresMasculinos);
   const nombreFemenino = obtenerElementoAleatorio(DataNombresFemeninos);
 
@@ -125,35 +163,29 @@ function generarAlumno(usedDNIs) {
 
   const apellido = obtenerElementoAleatorio(DataApellidos);
   const localidad = obtenerElementoAleatorio(DataLocalidades);
-  const dni = generarDNIaleatorio(usedDNIs);
-  const edad = generarEdadAleatoria();
 
-  const nivel =
-    Math.random() < 0.3
-      ? "Terciario"
-      : Math.random() < 0.5
-      ? "Primaria"
-      : "Secundaria";
+  const fechaNacimiento = generarFechaNacimiento();
+  const dni = calcularDNI(fechaNacimiento);
 
-  const grado = Math.floor(Math.random() * (nivel === "Primaria" ? 6 : 7)) + 1;
-  const gradoAño = nivel === "Primaria" ? "Grado" : "Año";
-  const modalidad =
-    nivel === "Secundaria" &&
-    grado > 3 &&
-    obtenerElementoAleatorio(DataModalidadesSecundaria);
+  // Obtener un año aleatorio y sus materias correspondientes
+  const año = obtenerElementoAleatorio(DataMaterias);
+  const materias = año.materias;
+  const cantidadMaterias = materias.length;
 
-  const cantidadMaterias =
-    nivel === "Primaria" ? 8 : nivel === "Secundaria" ? 12 : 8;
-
+  // Asignar notas aleatorias a cada materia
   const notas = {};
-  for (let j = 1; j <= cantidadMaterias; j++) {
-    notas[`Materia${j}`] = Math.floor(Math.random() * 10) + 1;
+  for (let i = 0; i < cantidadMaterias; i++) {
+    const materia = materias[i].name;
+    notas[materia] = Math.floor(Math.random() * 10) + 1;
   }
 
-  const establecimiento = {
-    codigo: nivel === "Primaria" ? 102 : nivel === "Secundaria" ? 103 : 115,
-    nombre: `Escuela ${dni}`,
-  };
+  const establecimiento = obtenerElementoAleatorio(
+    DataEstablecimientosEducativos
+  );
+
+  //Faker dependency//
+  const telefono = faker.phone.phoneNumber();
+  const email = faker.internet.email();
 
   const domicilio = generarDomicilio(localidad.name);
 
@@ -162,12 +194,15 @@ function generarAlumno(usedDNIs) {
     nombres: nombre,
     apellidos: apellido,
     genero: genero,
+    contacto: {
+      email: email,
+      telefono: telefono,
+    },
+
     localidad: localidad,
     domicilio: domicilio,
-    edad: edad,
-    nivel: nivel,
-    [gradoAño]: grado,
-    modalidad: modalidad,
+    fechaNacimiento: fechaNacimiento,
+    año: año.año,
     notas: notas,
     establecimiento: establecimiento,
   };
