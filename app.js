@@ -37,14 +37,13 @@ const NIVELES_EDUCATIVOS = [
 // Esquema basico, faltan datos
 // Creo que funciona medianamente bien, hacer fork cualquier cosa, se aceptan suggestions
 
-//Funcion obtener elemento aleatorio
-function obtenerElementoAleatorio(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
 //Genera un numero Aleatorio, como dice su nombre, no?
 function generarNumeroAleatorio(min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
+}
+
+function obtenerElementoAleatorio(arr) {
+  return arr[generarNumeroAleatorio(0, arr.length - 1)];
 }
 
 //-----------------//
@@ -57,55 +56,79 @@ function generarNumeroAleatorio(min, max) {
 //   usedDNIs.add(dni);
 //   return dni;
 // }
-//---------------------------------//
-const generarFechaNacimiento = () => {
-  return faker.date.between("1900-01-01", "2015-12-31");
-};
 
-function calcularDNI(fechaNacimiento) {
-  if (!fechaNacimiento) {
-    throw new Error("Fecha de nacimiento no definida");
+//---------------------------------//
+//Generar fecha nac
+function generarFechaNacimiento() {
+  const fecha = faker.date.between("1900-01-01", "2015-12-31");
+  return fecha.toISOString().split("T")[0];
+}
+//Edad segun fecha
+function generarEdad(fechaNacimiento) {
+  const fechaActual = new Date();
+  const fechaNac = new Date(fechaNacimiento);
+  let edad = fechaActual.getFullYear() - fechaNac.getFullYear();
+
+  if (
+    fechaActual.getMonth() < fechaNac.getMonth() ||
+    (fechaActual.getMonth() === fechaNac.getMonth() &&
+      fechaActual.getDate() < fechaNac.getDate())
+  ) {
+    edad--;
   }
 
-  // Definir rangos de DNI según el nivel educativo
+  return edad;
+}
+
+//---------------------------------//
+function obtenerNivelEducativo(edad) {
+  let nivel;
+
+  if (edad >= 4 && edad <= 6) {
+    nivel = NIVELES_EDUCATIVOS.find((nivel) => nivel.nombre === "Inicial");
+  } else if (edad >= 6 && edad <= 12) {
+    nivel = NIVELES_EDUCATIVOS.find((nivel) => nivel.nombre === "Primaria");
+  } else if (edad >= 12 && edad <= 18) {
+    nivel = NIVELES_EDUCATIVOS.find((nivel) => nivel.nombre === "Secundaria");
+  } else if (edad >= 18 && edad <= 45) {
+    nivel = NIVELES_EDUCATIVOS.find((nivel) => nivel.nombre === "Superior");
+  }
+
+  return nivel;
+}
+
+// function obtenerNivelEducativo(yearOfBirth) {
+//   const edad = new Date().getFullYear() - yearOfBirth;
+
+//   if (edad >= 4 && edad <= 6) {
+//     return "Inicial";
+//   } else if (edad >= 6 && edad <= 12) {
+//     return "Primaria";
+//   } else if (edad >= 12 && edad <= 18) {
+//     return "Secundaria";
+//   } else if (edad >= 18 && edad <= 45) {
+//     return "Terciario";
+//     // } else {
+//     //   throw new Error("Edad fuera de rango educativo");
+//   }
+// }
+
+function calcularDNI(fechaNacimiento) {
+  const yearOfBirth = fechaNacimiento;
+  const nivel = obtenerNivelEducativo(yearOfBirth);
+
   const dniRanges = {
     Primaria: { min: 50000000, max: 55999999 },
     Secundaria: { min: 45000000, max: 49999999 },
     Terciario: { min: 10000000, max: 44999999 },
   };
 
-  // Extraer el año de nacimiento
-  const yearOfBirth = parseInt(fechaNacimiento.split("-")[0]);
-
-  // Obtener el nivel educativo basado en el año de nacimiento
-  const nivel = obtenerNivelEducativo(yearOfBirth);
-
-  // Obtener el rango de DNI según el nivel educativo
-  const dniRange = dniRanges[nivel];
-
-  // Calcular el DNI en función del año de nacimiento
-  const dni = dniRange.min + (yearOfBirth - new Date().getFullYear());
+  const dni = dniRanges[nivel].min + (yearOfBirth - new Date().getFullYear());
 
   return dni;
 }
 
 //---------------------------------//
-
-function obtenerNivelEducativo(yearOfBirth) {
-  const edad = new Date().getFullYear() - yearOfBirth;
-
-  if (edad >= 4 && edad <= 6) {
-    return "Inicial";
-  } else if (edad >= 6 && edad <= 12) {
-    return "Primaria";
-  } else if (edad >= 12 && edad <= 18) {
-    return "Secundaria";
-  } else if (edad >= 18 && edad <= 45) {
-    return "Terciario";
-    // } else {
-    //   throw new Error("Edad fuera de rango educativo");
-  }
-}
 
 //Obtener barrio de los array de arriba, segun localidad
 function obtenerBarrioAleatorio(localidadName) {
@@ -114,29 +137,33 @@ function obtenerBarrioAleatorio(localidadName) {
 
 //Generador de domicilio, la estructura del objeto "domicilio", difiere segun el tipo; "Edificio", "Vivienda", "Casa", respectivamente
 function generarDomicilio(localidadName) {
-  const domicilio = { calle: `Calle ${generarNumeroAleatorio() * 1000 + 1}` };
-  if (localidadName === "Formosa Capital") {
-    const tiposDomicilio = ["Edificio", "Vivienda", "Casa"];
-    const tipo = obtenerElementoAleatorio(tiposDomicilio);
+  const domicilio = { calle: `Calle ${generarNumeroAleatorio(1000, 9999)}` };
 
-    if (tipo === "Edificio") {
-      domicilio.tipo = "Edificio";
-      domicilio.piso = Math.floor(Math.random() * 20) + 1;
-      domicilio.depto = Math.floor(Math.random() * 10) + 1;
-    } else if (tipo === "Vivienda") {
-      domicilio.tipo = "Vivienda";
-      domicilio.manzana = Math.floor(Math.random() * 20) + 1;
-      domicilio.casa = Math.floor(Math.random() * 100) + 1;
-    } else {
-      domicilio.tipo = "Casa";
-      domicilio.casa = Math.floor(Math.random() * 100) + 1;
-    }
-    domicilio.barrio = obtenerBarrioAleatorio(localidadName);
+  // Asignar el tipo de domicilio
+  if (localidadName === "Formosa Capital") {
+    domicilio.tipo = obtenerElementoAleatorio(["Edificio", "Vivienda", "Casa"]);
   } else {
     domicilio.tipo = "Casa";
-    domicilio.casa = Math.floor(Math.random() * 100) + 1;
-    domicilio.barrio = obtenerBarrioAleatorio(localidadName);
   }
+
+  switch (domicilio.tipo) {
+    case "Edificio":
+      domicilio.piso = generarNumeroAleatorio(1, 20);
+      domicilio.depto = generarNumeroAleatorio(1, 10);
+      domicilio.torre = Math.floor(Math.random() * 100) + 1;
+      break;
+    case "Vivienda":
+      domicilio.manzana = generarNumeroAleatorio(1, 20);
+      domicilio.casa = generarNumeroAleatorio(1, 100);
+      break;
+    case "Casa":
+      domicilio.casa = generarNumeroAleatorio(1, 100);
+      break;
+  }
+
+  // Asignar el barrio
+  domicilio.barrio = obtenerBarrioAleatorio(localidadName);
+
   return domicilio;
 }
 
@@ -179,6 +206,10 @@ async function generarAlumno() {
     notas[materia] = Math.floor(Math.random() * 10) + 1;
   }
 
+  //------//
+  const edad = generarEdad(fechaNacimiento);
+
+  //--------//
   const establecimiento = obtenerElementoAleatorio(
     DataEstablecimientosEducativos
   );
@@ -187,6 +218,7 @@ async function generarAlumno() {
   const telefono = faker.phone.phoneNumber();
   const email = faker.internet.email();
 
+  //Domicilio
   const domicilio = generarDomicilio(localidad.name);
 
   return {
@@ -202,19 +234,27 @@ async function generarAlumno() {
     localidad: localidad,
     domicilio: domicilio,
     fechaNacimiento: fechaNacimiento,
+    edad: edad,
     año: año.año,
     notas: notas,
-    establecimiento: establecimiento,
+    establecimiento: {
+      nombre: establecimiento.nombre,
+      ambito: establecimiento.ambito,
+      departamento: establecimiento.departamento,
+      localidad: establecimiento.localidad,
+      coñd_loca: establecimiento.cod_loca,
+      CUEanexo: establecimiento.CUEanexo,
+    },
   };
 }
 
 //Funcion de guardado con FS
 async function guardarAlumnos() {
-  const usedDNIs = new Set();
+  const calcularDNI = new Set();
   const alumnos = [];
 
   for (let i = 0; i < 10000; i++) {
-    alumnos.push(generarAlumno(usedDNIs));
+    alumnos.push(generarAlumno(calcularDNI));
   }
 
   try {

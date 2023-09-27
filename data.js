@@ -515,11 +515,15 @@ export const DataBarrios = {
 };
 
 //Array modalidades asignadas a partir del 4to año de secundaria
+
+
+//COLLECION PLANES AQUI
 export const DataModalidadesSecundaria = [
-  { name: "Cs. Sociales" },
-  { name: "Cs. Naturales" },
-  { name: "Economía y Comercio" },
-  { name: "Producción de Bienes y Servicios" },
+  { name: "CBS", id: 1 },
+  { name: "Cs. Sociales", id: 2},
+  { name: "Cs. Naturales", id: 3 },
+  { name: "Economía y Comercio", id: 4 },
+  { name: "Producción de Bienes y Servicios", id: 5 },
 ];
 
 //======================================//
