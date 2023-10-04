@@ -1,25 +1,10 @@
 //======================================//
 //======================================//
-//======================================//
-//======================================//
 
 //Documento de datos para la generacion de registro
 
-// // Rangos de edades para cada nivel
-// export const EDAD_RANGOS = {
-//   Inicial: { min: 4, max: 6 },
-//   Primario: { min: 6, max: 12 },
-//   Secundario: { min: 12, max: 18 },
-//   Terciario: { min: 18, max: 45 },
-// };
-
-// // Niveles educativos y sus códigos
-// export const NIVELES_EDUCATIVOS = [
-//   { codigo: 101, nombre: "Inicial" },
-//   { codigo: 102, nombre: "Primaria" },
-//   { codigo: 110, nombre: "Secundaria" },
-//   { codigo: 115, nombre: "Superior" },
-// ];
+//======================================//
+//======================================//
 
 const nombresFemeninosOriginales = [
   "Sofía",
@@ -323,6 +308,7 @@ export const DataMaterias = {
       ],
     },
   ],
+
   Terciario: [
     {
       año: "1er Año",
@@ -515,18 +501,11 @@ export const DataBarrios = {
 };
 
 //Array modalidades asignadas a partir del 4to año de secundaria
-
-
 //COLLECION PLANES AQUI
 export const DataModalidadesSecundaria = [
   { name: "CBS", id: 1 },
-  { name: "Cs. Sociales", id: 2},
+  { name: "Cs. Sociales", id: 2 },
   { name: "Cs. Naturales", id: 3 },
   { name: "Economía y Comercio", id: 4 },
   { name: "Producción de Bienes y Servicios", id: 5 },
 ];
-
-//======================================//
-//======================================//
-//======================================//
-//======================================//

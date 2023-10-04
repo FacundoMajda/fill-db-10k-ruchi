@@ -11,23 +11,29 @@ Hecho en colaboración entre los alumnos del primer año TSDSM - IPF
 ## Interface de Alumno
 
 ```bash
- Alumno {
-  _id: number;
-  nombres: string;
-  apellidos: string;
-  genero: string;
-  contacto: {
-    email: string;
-    telefono: string;
-  },
-
-  localidad: DataLocalidades;
-  domicilio: Object;
-  fechaNacimiento: string;
-  año: string;
-  notas: Object;
-  establecimiento: DataEstablecimientosEducativos;
-}
+ {
+    _id: dni,
+    nombre: nombre,
+    apellido: apellido,
+    genero: genero,
+    contacto: {
+      email: email,
+      telefono: telefono,
+    },
+    localidad: localidad,
+    domicilio: domicilio,
+    fechaNacimiento: fechaNacimiento,
+    edad: edad,
+    notas: {},
+    establecimiento: {
+      nombre: establecimiento.nombre,
+      ambito: establecimiento.ambito,
+      departamento: establecimiento.departamento,
+      localidad: establecimiento.localidad,
+      cod_loca: establecimiento.cod_loca,
+      CUEanexo: establecimiento.CUEanexo,
+    },
+  };
 ```
 
 ## Modo de Ejecución
