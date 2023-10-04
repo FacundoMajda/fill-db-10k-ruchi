@@ -1,6 +1,6 @@
 import faker from "faker";
-import { DataBarrios } from "./data.js";
-
+import { DataBarrios, DataMaterias } from "./data.js";
+import * as DataEstablecimientos from "./establecimientos_educativos.js";
 export const niveles = ["Inicial", "Primaria", "Secundaria", "Terciario"];
 
 // Datos de niveles educativos y sus rangos de DNI correspondientes
@@ -186,4 +186,61 @@ export function obtenerMateriasPorNivel(nivel) {
     throw new Error(`Nivel educativo '${nivel}' no válido.`);
   }
   return DataMaterias[nivel] || [];
+}
+
+// Función para generar materias y notas aleatorias
+export function generarMateriasYNotas(nivelEducativo) {
+  try {
+    const materiasPorNivel = obtenerMateriasPorNivel(nivelEducativo);
+    if (!materiasPorNivel) {
+      throw new Error(
+        `No se encontraron materias para el nivel educativo '${nivelEducativo}'.`
+      );
+    }
+
+    const materias = [];
+    const notas = [];
+
+    // Generar materias y notas aleatorias para cada materia
+    materiasPorNivel.forEach((año) => {
+      año.materias.forEach((materia) => {
+        materias.push(materia.name);
+        // Generar una nota aleatoria entre 1 y 10
+        notas.push(generarNotaAleatoria(1, 10));
+      });
+    });
+
+    return { materias, notas };
+  } catch (error) {
+    console.error(
+      "Ocurrió un error al generar las materias y notas:",
+      error.message
+    );
+    throw error;
+  }
+}
+
+//----------------------//
+export function obtenerEstablecimientoPorNivel(nivel) {
+  switch (nivel) {
+    case "Inicial":
+      return obtenerElementoAleatorio(
+        DataEstablecimientos.DataEstablecimientosInicial
+      );
+    case "Primaria":
+      return obtenerElementoAleatorio(
+        DataEstablecimientos.DataEstablecimientosPrimaria
+      );
+    case "Secundaria":
+      return obtenerElementoAleatorio(
+        DataEstablecimientos.DataEstablecimientosSecundaria
+      );
+    case "Terciaria":
+      return obtenerElementoAleatorio(
+        DataEstablecimientos.DataEstablecimientosTerciaria
+      );
+    default:
+      console.error(`Nivel educativo '${nivel}' no válido.`);
+      throw new Error(`Nivel educativo '${nivel}' no válido.`);
+  }
 }

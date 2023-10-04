@@ -1,3 +1,4 @@
+//@ts-check
 import faker from "faker";
 import fs from "fs";
 import {
@@ -12,11 +13,12 @@ import {
   calcularDNI,
   generarEdad,
   generarDomicilio,
-  niveles,
-  NIVELES_EDUCATIVOS,
+  // niveles,
+  // NIVELES_EDUCATIVOS,
+  obtenerEstablecimientoPorNivel,
   obtenerNivelEducativo,
 } from "./modules/utils.js";
-import { DataEstablecimientosEducativos } from "./establecimientos_educativos.js";
+import * as DataEstablecimientos from "./modules/establecimientos_educativos.js";
 
 // Función principal, generación de registro, unión de todas las otras funciones
 function generarAlumno() {
@@ -36,9 +38,7 @@ function generarAlumno() {
   // Luego, puedes calcular el DNI y otros datos
   const dni = calcularDNI(nivel);
   const localidad = obtenerElementoAleatorio(DataLocalidades);
-  const establecimiento = obtenerElementoAleatorio(
-    DataEstablecimientosEducativos
-  );
+  const establecimiento = obtenerEstablecimientoPorNivel(nivel);
 
   // Faker dependency
   const telefono = faker.phone.phoneNumber();
@@ -60,6 +60,7 @@ function generarAlumno() {
     domicilio: domicilio,
     fechaNacimiento: fechaNacimiento,
     edad: edad,
+    nivelEducativo: nivel,
     notas: {},
     establecimiento: {
       nombre: establecimiento.nombre,
